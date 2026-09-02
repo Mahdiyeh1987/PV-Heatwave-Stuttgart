@@ -5,6 +5,8 @@ type: software
 authors:
   - family-names: "Tabatabaei"
     given-names: "Mahdiyeh"
+  - family-names: "Aghaei"
+    given-names: "Mohammadreza"
 version: "1.0.0"
 date-released: "2026-09-02"
 keywords:
