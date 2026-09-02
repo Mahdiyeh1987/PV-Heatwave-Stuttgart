@@ -136,4 +136,10 @@ python scripts/14_joint_uncertainty.py \
 
 ## Citation and archive
 
-`CITATION.cff` is included. Before final manuscript submission, publish a GitHub release and archive the release in a permanent repository such as Zenodo. Add the final repository URL/DOI to `CITATION.cff` and the manuscript Data Availability statement. Do not invent a DOI before the archive exists.
+CITATION.cff is included for citation metadata.
+
+GitHub repository:
+https://github.com/Mahdiyeh1987/PV-Heatwave-Stuttgart
+
+Archived release v1.0.0:
+https://doi.org/10.5281/zenodo.22260756
