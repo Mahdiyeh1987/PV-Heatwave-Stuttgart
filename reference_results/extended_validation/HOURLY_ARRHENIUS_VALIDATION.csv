@@ -1,0 +1,10 @@
+metric,value
+proxy_to_hourly_mean_ratio,5.973801308048593
+relative_bias_pct,497.3801308048593
+daily_Pearson_r,0.9631673954217391
+daily_Pearson_r2,0.9276914316034968
+median_proxy_to_hourly_ratio,4.145476346300809
+mean_equiv_damage_T_C,18.441853904627543
+mean_proxy_T_C,30.885275142438463
+mean_equiv_minus_proxy_C,-12.443421237810922
+RMSE_equiv_vs_proxy_C,13.557816508585766

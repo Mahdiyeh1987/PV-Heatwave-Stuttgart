@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite this repository and the associated manuscript. Add the final repository URL/DOI after archiving the release."
+title: "Climate-Driven PV Heatwave LCA — Stuttgart: Reproducible Analysis Code"
+type: software
+authors:
+  - family-names: "Tabatabaei"
+    given-names: "Mahdiyeh"
+version: "1.0.0"
+date-released: "2026-09-02"
+keywords:
+  - photovoltaics
+  - heatwaves
+  - climate change
+  - degradation
+  - service life
+  - life cycle assessment
+  - Stuttgart
+  - uncertainty analysis
+  - reproducibility
