@@ -51,7 +51,7 @@ def system_generation(yield0,rd_pct,life,horizon=30):
 
 
 def lca_constants():
-    ref_gen=sum(IEA_YIELD*(1-IEA_RD/100*(n-1)) for n in range(1,31))
+    ref_gen=IEA_YIELD*30  # annual reference yield already embodies the fact-sheet degradation assumption
     total=IEA_GWP*ref_gen/1000
     return total,total*SHARE_MODULE,total*SHARE_INVERTER,total*SHARE_OTHER
 

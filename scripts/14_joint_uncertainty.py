@@ -47,7 +47,7 @@ def generation(Y,rd,life):
 
 
 def burdens():
-    refgen=sum(IEA_YIELD*(1-IEA_RD/100*(n-1)) for n in range(1,31))
+    refgen=IEA_YIELD*30  # published annual reference yield already embodies the fact-sheet degradation assumption
     total=IEA_GWP*refgen/1000
     return total*SHARE_MODULE,total*SHARE_INVERTER,total*SHARE_OTHER
 

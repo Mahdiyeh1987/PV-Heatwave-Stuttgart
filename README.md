@@ -2,9 +2,9 @@
 
 Reproducible analysis code for the Stuttgart case study linking future climate and explicitly characterized heatwaves to photovoltaic module thermal exposure, temperature-only Arrhenius stress, scenario-conditioned modeled service life, electricity generation, module replacement, and fixed-reference life-cycle GWP per kWh.
 
-**Repository version: 1.0.0 — First public reproducible release**
+**Repository version: 1.1.0 — Major-revision reproducibility update**
 
-This release includes extended validation and sensitivity analyses: hourly Arrhenius integration benchmarking, temporal-coincidence testing, hourly energy-index validation, heatwave/non-heatwave stress decomposition, spatial heatwave sensitivity, residual-service-life replacement accounting as a co-primary case, and factorial structural uncertainty propagation.
+This release includes the original extended validation workflow plus the 2026 major-revision audit: correction of the IEA-PVPS reference-energy reconstruction, end-of-service threshold/trajectory sensitivity, P90 heatwave-stress attribution sensitivity, raw-grid spatial-forcing provenance/alignment checks, diagnostic GWP mechanism decomposition, and updated corrected reference results.
 
 ## End-to-end study chain
 
@@ -22,6 +22,10 @@ This release includes extended validation and sensitivity analyses: hourly Arrhe
 12. Decompose modeled thermal-stress changes into heatwave-day and non-heatwave-day contributions.
 13. Compare Stuttgart grid-cell, bilinear-point, and 25-cell regional-mean heatwave metrics.
 14. Propagate structural uncertainty jointly across GCM, thermal treatment, durability parameters, yield treatment, and replacement accounting.
+15. Test 10/20/30% end-of-service loss criteria under linear and compound degradation trajectories.
+16. Recompute heatwave-stress attribution under model-specific historical P90 event masks.
+17. Audit/compare grid-cell, bilinear-point, and 25-cell regional forcing for module temperature and yield.
+18. Decompose corrected GWP changes diagnostically into annual-yield, degradation, and replacement/allocation increments.
 
 ## Climate ensemble
 
@@ -36,24 +40,25 @@ The three-model set is a selected ensemble. It is **not** presented as the full 
 
 ## Spatial treatment
 
-The raw Stuttgart `tasmax` subset is a 5 × 5 NEX-GDDP grid (25 cells). Audit of the archived processed outputs showed that the primary heatwave results correspond to the Stuttgart-containing grid cell centered at approximately **48.875° N, 9.125° E**. The primary cleaning workflow therefore makes that spatial treatment explicit.
+The raw Stuttgart NEX-GDDP subsets are 5 × 5 grids (25 cells). A v1.1.0 raw-data provenance audit confirmed that the **future** archived `tasmax`, `rsds`, and `sfcWind` series used by the thermal/yield workflow are co-located at the Stuttgart-containing grid cell centered at approximately **48.875° N, 9.125° E**. Earlier wording implying that future radiation/wind were regional means was inaccurate.
 
-The spatial sensitivity analysis compares:
+For future forcing, the spatial sensitivity analysis compares all three variables under:
 
-- Stuttgart grid cell — primary heatwave series;
+- Stuttgart-containing grid cell — archived primary treatment;
 - bilinear interpolation at 48.7758° N, 9.1829° E;
 - 25-cell regional mean.
 
-The direction and scenario ranking of the late-century heatwave increase are preserved across these extraction methods, while absolute threshold-exceedance counts differ.
+Across the audited cases, alternative extraction changes mean module-temperature proxy by at most about 0.80 °C and the hourly-calibrated annual energy index by at most about 0.47%. Historical `rsds`/`sfcWind` are retained as coordinate-free Stuttgart CSV inputs; their original within-subset extraction cannot be reconstructed from the archived files and is treated as an explicit provenance limitation.
 
 ## Repository structure
 
 ```text
 .
-├── scripts/              # numbered executable analysis stages (00–14)
+├── scripts/              # numbered executable analysis stages (00–18)
 ├── docs/                 # method parameters, maps, validation notes
 ├── reference_results/    # compact successful-run summaries
-│   └── extended_validation/ # extended validation reference outputs
+│   ├── extended_validation/ # extended validation reference outputs
+│   └── major_revision/     # v1.1.0 corrected/additional revision outputs
 ├── data/                 # README only; raw data are not distributed
 ├── processed/            # README only; generated outputs are not distributed
 ├── legacy/               # earliest downloader/checker archive preserved for provenance
@@ -82,6 +87,10 @@ The direction and scenario ranking of the late-century heatwave increase are pre
 | `12_heatwave_stress_decomposition.py` | Heatwave vs non-heatwave modeled stress decomposition and counterfactual. |
 | `13_spatial_heatwave_sensitivity.py` | Grid-cell vs bilinear vs 25-cell regional heatwave sensitivity. |
 | `14_joint_uncertainty.py` | Factorial structural uncertainty envelope. |
+| `15_end_of_service_sensitivity.py` | 10/20/30% end-of-service and linear/compound trajectory sensitivity. |
+| `16_percentile_heatwave_stress_attribution.py` | P90 heatwave-stress attribution sensitivity. |
+| `17_spatial_forcing_alignment.py` | Raw-grid spatial provenance and module-temperature/yield sensitivity. |
+| `18_gwp_mechanism_decomposition.py` | Diagnostic GWP yield/degradation/replacement decomposition. |
 
 ## Baseline execution
 
@@ -120,6 +129,39 @@ python scripts/14_joint_uncertainty.py \
   --out processed/08_Extended_Validation
 ```
 
+## v1.1.0 LCA correction
+
+The IEA-PVPS annual yield of **976 kWh/kWp/yr** is treated as an already-characterized value that includes the stated 0.7%/yr degradation assumption. It is therefore multiplied directly by the 30-year reference life:
+
+- reference generation = **29,280 kWh/kWp**;
+- characterized reference burden = **1,048.224 kg CO2-eq/kWp**.
+
+The v1.0.0 implementation applied degradation a second time when reconstructing the reference lifetime generation. Scripts and compact LCA reference outputs are corrected in v1.1.0. Relative matched future/historical GWP changes are essentially unchanged; absolute GWP values increase by about 11.3%. See `docs/MAJOR_REVISION_V1.1.0.md`.
+
+## Major-revision analyses
+
+```bash
+python scripts/15_end_of_service_sensitivity.py \
+  --period-results reference_results/extended_validation/HOURLY_CALIBRATED_RESULTS_REFERENCE.csv \
+  --out processed/09_Reviewer_Revision
+
+python scripts/16_percentile_heatwave_stress_attribution.py \
+  --thermal processed/03_PV_Thermal_Model/THERMAL_DAILY_STUTTGART.csv \
+  --p90-daily processed/07_Solar_Reviewer_Sensitivity/HEATWAVE_PERCENTILE_DAILY.csv \
+  --out processed/09_Reviewer_Revision
+
+python scripts/17_spatial_forcing_alignment.py \
+  --tasmax-root data/MIP6_Stuttgart_Heatwave_Tasmax \
+  --wind-rad-root data/NEX_GDDP_CMIP6_Stuttgart_Wind_Radiation \
+  --thermal-archive processed/03_PV_Thermal_Model/THERMAL_DAILY_STUTTGART.csv \
+  --period-results reference_results/extended_validation/HOURLY_CALIBRATED_RESULTS_REFERENCE.csv \
+  --out processed/09_Reviewer_Revision/spatial_alignment
+
+python scripts/18_gwp_mechanism_decomposition.py \
+  --period-results reference_results/extended_validation/HOURLY_CALIBRATED_RESULTS_REFERENCE.csv \
+  --out processed/09_Reviewer_Revision
+```
+
 ## Important scientific interpretation
 
 - Heatwave attribution is defined within the **selected temperature-only Arrhenius stress proxy**, not a causal partition of real PV degradation.
@@ -132,14 +174,15 @@ python scripts/14_joint_uncertainty.py \
 
 ## Reference results
 
-`reference_results/` contains compact baseline summaries. `reference_results/extended_validation/` contains compact tables from the extended validation and sensitivity workflow, including temporal validation, heatwave decomposition, spatial sensitivity summaries, and factorial uncertainty results. Large raw and daily intermediate datasets remain outside Git.
+`reference_results/` contains compact baseline summaries. `reference_results/extended_validation/` contains the temporal validation, heatwave decomposition, spatial heatwave sensitivity, and factorial uncertainty outputs. `reference_results/major_revision/` contains the v1.1.0 corrected GWP tables and additional reviewer-driven sensitivity/provenance outputs. Large raw and daily intermediate datasets remain outside Git.
 
 ## Citation and archive
 
-CITATION.cff is included for citation metadata.
+`CITATION.cff` is included. Before final manuscript submission, publish a GitHub release and archive the release in a permanent repository such as Zenodo. Add the final repository URL/DOI to `CITATION.cff` and the manuscript Data Availability statement. Do not invent a DOI before the archive exists.
 
-GitHub repository:
-https://github.com/Mahdiyeh1987/PV-Heatwave-Stuttgart
+## Major-revision scripts
 
-Archived release v1.0.0:
-https://doi.org/10.5281/zenodo.22260756
+- `15_percentile_heatwave_stress_attribution.py` — P90 heatwave-stress attribution sensitivity.
+- `16_spatial_forcing_alignment.py` — spatial provenance/alignment and thermal-yield sensitivity.
+
+See `docs/MAJOR_REVISION_V1.1.0.md` and `reference_results/major_revision/`.

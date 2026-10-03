@@ -449,11 +449,7 @@ def run_lca_allocation(lifetime_path: str | Path, outdir: Path) -> None:
     for c in required[3:]:
         life[c] = pd.to_numeric(life[c], errors="coerce")
 
-    rd = IEA_DEGRADATION_PCT_PER_YEAR / 100.0
-    iea_generation = sum(
-        IEA_ANNUAL_YIELD_KWH_PER_KWP * (1 - rd * (n - 1))
-        for n in range(1, IEA_PANEL_LIFE_YR + 1)
-    )
+    iea_generation = IEA_ANNUAL_YIELD_KWH_PER_KWP * IEA_PANEL_LIFE_YR  # published annual reference yield already embodies the fact-sheet degradation assumption
     total_ref_kg = IEA_GWP_G_PER_KWH * iea_generation / 1000.0
     module_kg = total_ref_kg * SHARE_MODULE
     inverter_kg = total_ref_kg * SHARE_INVERTER
