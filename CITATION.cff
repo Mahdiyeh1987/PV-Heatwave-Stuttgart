@@ -1,12 +1,16 @@
 cff-version: 1.2.0
-message: "If you use this code, please cite this repository and the associated manuscript. Add the final repository URL/DOI after archiving the release."
+message: "If you use this software, please cite this repository and the associated manuscript."
 title: "Climate-Driven PV Heatwave LCA — Stuttgart: Reproducible Analysis Code"
 type: software
 authors:
   - family-names: "Tabatabaei"
     given-names: "Mahdiyeh"
+  - family-names: "Aghaei"
+    given-names: "Mohammadreza"
 version: "1.1.0"
-date-released: "2026-09-02"
+date-released: "2026-10-03"
+doi: "10.5281/zenodo.23125920"
+repository-code: "https://github.com/Mahdiyeh1987/PV-Heatwave-Stuttgart"
 keywords:
   - photovoltaics
   - heatwaves
